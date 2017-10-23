@@ -33,3 +33,41 @@ func TestEventCache_Flush(t *testing.T) {
 	evc.Flush()
 	assert.True(t, pass)
 }
+
+func TestEventCacheGrowth(t *testing.T) {
+	evsw := NewEventSwitch()
+	evsw.Start()
+	evc := NewEventCache(evsw)
+
+	fireNEvents(evc, 100)
+	c := cap(evc.events)
+	evc.Flush()
+	assert.Equal(t, c, cap(evc.events), "cache cap should remain the same after flushing events")
+
+	fireNEvents(evc, c/2+1)
+	evc.Flush()
+	assert.Equal(t, c, cap(evc.events), "cache cap should remain the same after flushing more than half "+
+		"the number of events as last time")
+
+	fireNEvents(evc, c/2-1)
+	evc.Flush()
+	assert.True(t, c > cap(evc.events), "cache cap should drop after flushing fewer than half "+
+		"the number of events as last time")
+
+	fireNEvents(evc, c*4)
+	evc.Flush()
+	assert.True(t, c < cap(evc.events), "cache cap should grow after flushing more events than seen before")
+
+	for numEvents := 100; numEvents >= 0; numEvents-- {
+		fireNEvents(evc, numEvents)
+		evc.Flush()
+		assert.True(t, cap(evc.events) <= 2*numEvents, "cap (%v) should be at most twice numEvents (%v)",
+			cap(evc.events), numEvents)
+	}
+}
+
+func fireNEvents(evc *EventCache, n int) {
+	for i := 0; i < n; i++ {
+		evc.FireEvent("something", struct{}{})
+	}
+}

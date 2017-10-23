@@ -32,6 +32,14 @@ func (evc *EventCache) Flush() {
 	for _, ei := range evc.events {
 		evc.evsw.FireEvent(ei.event, ei.data)
 	}
-	// Clear the buffer, since we only add to it with append it's safe to just set it to nil and maybe safe an allocation
-	evc.events = nil
+	// Clear the buffer by re-slicing its length to zero
+	if cap(evc.events) > len(evc.events)<<1 {
+		// Trim the backing array capacity when it is more than double the length of the slice to avoid tying up memory
+		// after a spike in the number of events to buffer
+		evc.events = evc.events[:0:len(evc.events)]
+	} else {
+		// Re-slice the length to 0 to clear buffer but hang on to spare capacity in backing array that has been added
+		// in previous cache round
+		evc.events = evc.events[:0]
+	}
 }
