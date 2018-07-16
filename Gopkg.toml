@@ -24,6 +24,7 @@
 #   go-tests = true
 #   unused-packages = true
 
+required = ["github.com/gogo/protobuf/gogoproto"]
 
 [[constraint]]
   branch = "master"
@@ -39,7 +40,7 @@
 
 [[constraint]]
   name = "github.com/gogo/protobuf"
-  version = "1.0.0"
+  version = "~1.1.0"
 
 [[constraint]]
   branch = "master"
@@ -64,6 +65,7 @@
 [[constraint]]
   name = "github.com/btcsuite/btcutil"
   branch ="master"
+
 [prune]
   go-tests = true
   unused-packages = true
