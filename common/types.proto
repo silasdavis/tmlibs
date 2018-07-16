@@ -1,8 +1,16 @@
 syntax = "proto3";
 package common;
 
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
 //----------------------------------------
 // Abstract types
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
 
 // Define these here for compatibility but use tmlibs/common.KVPair.
 message KVPair {
