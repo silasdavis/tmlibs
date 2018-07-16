@@ -18,7 +18,7 @@ protoc:
 	## If you get the following error,
 	## "error while loading shared libraries: libprotobuf.so.14: cannot open shared object file: No such file or directory"
 	## See https://stackoverflow.com/a/25518702
-	protoc $(INCLUDE) --go_out=plugins=grpc:. common/*.proto
+	protoc $(INCLUDE) --gogo_out=plugins=grpc:. common/*.proto
 	@echo "--> adding nolint declarations to protobuf generated files"
 	@awk '/package common/ { print "//nolint: gas"; print; next }1' common/types.pb.go > common/types.pb.go.new
 	@mv common/types.pb.go.new common/types.pb.go
